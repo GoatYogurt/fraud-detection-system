@@ -37,16 +37,25 @@ setInterval(() => {
             document.getElementById("fraud_rate").textContent = data.fraud_rate + "%";
 
             // Update transaction table
-            const tableBody = document.getElementById("tx_table");
-            tableBody.innerHTML = '';
+            const tables = document.getElementsByName("tx_table");
+
+            // Clear all tables
+            tables.forEach(table => table.innerHTML = '');
+
+            // Add rows to each table
             data.latest_transactions.forEach(tx => {
-                const row = "<tr>\n"
-                    + `<td>${tx.id}</td>\n`
-                    + `<td>${tx.amount}</td>\n`
-                    + `<td>${tx.fraud}</td>\n`
-                    + `<td>${tx.time}</td>\n`
-                    + `</tr>`;
-                tableBody.innerHTML += row;
+                const row = `
+    <tr>
+      <td>${tx.id}</td>
+      <td>${tx.amount}</td>
+      <td>${tx.fraud}</td>
+      <td>${tx.time}</td>
+    </tr>
+  `;
+                tables.forEach(table => {
+                    table.innerHTML += row;
+                });
             });
+
         });
 }, 2500)

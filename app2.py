@@ -43,7 +43,6 @@ def predict():
 
         # get all the features of the data received from request. this data has 23 features
         features = data.get('features', None)
-        # print(features)
 
         # validate the data and the data features
         validation_response = validate_features(features)
@@ -52,18 +51,12 @@ def predict():
 
         # convert to DataFrame, drop all irrelevant features. this DataFrame has 15 features from INPUT_FEATURES
         input_df = pd.DataFrame([features])[INPUT_FEATURES]
-        # print(input_df)
-        # input_df = scaler.transform(input_df)
-        # print(input_df)
 
         # Predict
         prediction = model.predict(input_df)[0]
         print(model.predict_proba(input_df)[0, 1])
         print(prediction)
         is_fraud = bool(prediction)
-
-        # is_fraud = model.predict_proba(input_df)[0, 1]
-        # print(is_fraud)
 
         # log the transaction for later analysis
         log_transaction(features['TRANSACTION_ID'], features['TX_AMOUNT'], features['TX_DATETIME'], is_fraud)

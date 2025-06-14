@@ -3,7 +3,6 @@ from datetime import datetime
 import pandas as pd
 import os
 
-
 # the features used to predict fraud
 INPUT_FEATURES = [
     'TX_AMOUNT', 'TX_DURING_WEEKEND', 'TX_DURING_NIGHT', 'CUSTOMER_ID_NB_TX_1DAY_WINDOW',
@@ -30,7 +29,7 @@ def log_transaction(tx_id, amount, tx_datetime, is_fraud):
         "id": tx_id,
         "amount": amount,
         "time": tx_datetime,
-        "fraud": int(is_fraud)
+        "fraud": is_fraud
     }
     with open("logs/transactions.log", "a") as f:
         f.write(json.dumps(log_entry) + "\n")
