@@ -11,13 +11,13 @@ def send_request(payload: str):
 # Load dataset
 DIR_INPUT='data/data' 
 
-BEGIN_DATE = "2018-08-15"
-END_DATE = "2018-08-31"
+BEGIN_DATE = "2018-09-15"
+END_DATE = "2018-09-31"
 BEGIN_DATE_IN_DATETIME = datetime.strptime(BEGIN_DATE, '%Y-%m-%d')
 
 transactions_df = read_files(DIR_INPUT, BEGIN_DATE, END_DATE)
 print("{0} transactions loaded, containing {1} fraudulent transactions".format(len(transactions_df),transactions_df.TX_FRAUD.sum()))
-# transactions_df = transactions_df[transactions_df.TX_FRAUD == 0]
+transactions_df = transactions_df[transactions_df.TX_FRAUD == 1]
 transactions_df['TX_DATETIME'] = transactions_df['TX_DATETIME'].astype(str)
 
 # test_df = pd.read_csv('test.csv')
@@ -29,21 +29,20 @@ transactions_df['TX_DATETIME'] = transactions_df['TX_DATETIME'].astype(str)
 # print(test_df)
 # print(test_df.dtypes)
 
-# length = len(transactions_df)
+length = len(transactions_df)
 # print(length)
 # print(transactions_df['TX_FRAUD'])
 # print(transactions_df.dtypes)
 
 predictions = []
 y_true = []
-for i in range(100):
+for i in range(20):
     features_dict = transactions_df.iloc[i].to_dict() # extract the row's features as a dict
     y_true.append(features_dict['TX_FRAUD'])
     payload = {'features': features_dict} # Create JSON payload with named features
     response = send_request(payload).json()
-    # print(response)
+    print(response)
     predictions.append(response['fraud'])
-    break
 
 print(f'All predictions: {predictions}')
 print(f'True Labels: {y_true}')

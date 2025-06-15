@@ -36,26 +36,52 @@ setInterval(() => {
             document.getElementById("frauds").textContent = data.frauds;
             document.getElementById("fraud_rate").textContent = data.fraud_rate + "%";
 
-            // Update transaction table
-            const tables = document.getElementsByName("tx_table");
+            // Update fraudulent transaction table
+            const fraudulent_tx_table = document.getElementById("fraudulent_tx_table");
+            fraudulent_tx_table.innerHTML = '';
 
-            // Clear all tables
-            tables.forEach(table => table.innerHTML = '');
-
-            // Add rows to each table
-            data.latest_transactions.forEach(tx => {
+            data.latest_fraudulent_transactions.forEach(tx => {
                 const row = `
-    <tr>
-      <td>${tx.id}</td>
-      <td>${tx.amount}</td>
-      <td>${tx.fraud}</td>
-      <td>${tx.time}</td>
-    </tr>
-  `;
-                tables.forEach(table => {
-                    table.innerHTML += row;
-                });
+                            <tr>
+                            <td>${tx.id}</td>
+                            <td>${tx.amount}</td>
+                            <td>${tx.fraud}</td>
+                            <td>${tx.time}</td>
+                            </tr>
+                            `;
+                fraudulent_tx_table.innerHTML += row;
             });
 
+            // Update all transactions table
+            const all_tx_table = document.getElementById('all_tx_table');
+            all_tx_table.innerHTML = '';
+
+            data.latest_transactions.forEach(tx => {
+                const row = `
+                            <tr>
+                            <td>${tx.id}</td>
+                            <td>${tx.amount}</td>
+                            <td>${tx.fraud}</td>
+                            <td>${tx.time}</td>
+                            </tr>
+                            `;
+                all_tx_table.innerHTML += row;
+            });
+
+            // Update suspicious transactions table
+            const suspicious_tx_table = document.getElementById('suspicious_tx_table');
+            suspicious_tx_table.innerHTML = '';
+
+            data.suspicious_transactions.forEach(tx => {
+                const row = `
+                            <tr>
+                            <td>${tx.id}</td>
+                            <td>${tx.amount}</td>
+                            <td>${tx.fraud_score}</td>
+                            <td>${tx.time}</td>
+                            </tr>
+                            `;
+                suspicious_tx_table.innerHTML += row;
+            });
         });
 }, 2500)

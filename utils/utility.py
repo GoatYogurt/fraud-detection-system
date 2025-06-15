@@ -14,6 +14,8 @@ INPUT_FEATURES = [
     'TERMINAL_ID_RISK_30DAY_WINDOW'
 ]
 
+FRAUD_THRESHOLD = 0.8
+SUSPICIOUS_THRESHOLD = 0.5
 PORT = 5000
 
 # APIs for fetching data
@@ -24,13 +26,15 @@ FRAUDRATE_API = '/api/fraud-rate'
 # APIs for fetching UI
 DASHBOARD_API = '/dashboard'
 
-def log_transaction(tx_id, amount, tx_datetime, is_fraud):
+def log_transaction(tx_id, tx_amount, tx_datetime, is_fraud, fraud_score):
     log_entry = {
         "id": tx_id,
-        "amount": amount,
+        "amount": tx_amount,
         "time": tx_datetime,
-        "fraud": is_fraud
+        "fraud": is_fraud,
+        "fraud_score": fraud_score
     }
+
     with open("logs/transactions.log", "a") as f:
         f.write(json.dumps(log_entry) + "\n")
 

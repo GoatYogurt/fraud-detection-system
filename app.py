@@ -52,9 +52,11 @@ def predict():
 
         # convert to DataFrame, drop all irrelevant features. this DataFrame has 15 features from INPUT_FEATURES
         input_df = pd.DataFrame([features])[INPUT_FEATURES]
-        # print(input_df)
-        # input_df = scaler.transform(input_df)
-        # print(input_df)
+        print(input_df)
+
+        # scale the input dataframe, using the scaler from kaggle
+        input_df = scaler.transform(input_df)
+        print(input_df)
 
         # Predict
         prediction = model.predict(input_df)[0]
@@ -62,11 +64,12 @@ def predict():
         print(prediction)
         is_fraud = bool(prediction)
 
-        # is_fraud = model.predict_proba(input_df)[0, 1]
-        # print(is_fraud)
+        fraud_score = model.predict_proba(input_df)[0, 1]
+        print(fraud_score)
 
         # log the transaction for later analysis
-        log_transaction(features['TRANSACTION_ID'], features['TX_AMOUNT'], features['TX_DATETIME'], is_fraud)
+        print(features)
+        log_transaction(features['TRANSACTION_ID'], features['TX_AMOUNT'], features['TX_DATETIME'], is_fraud >= FRAUD_THRESHOLD, round(fraud_score, 3))
 
         return jsonify({'fraud': is_fraud})
 
@@ -88,17 +91,31 @@ def return_latest_transactions():
     frauds = sum(1 for tx in txs if tx['fraud'] == 1)
     fraud_rate = round(frauds / total_tx * 100, 2) if total_tx else 0
 
-    latest_transactions = sorted(
+    latest_fraudulent_transactions = sorted(
         [tx for tx in txs if tx['fraud'] == 1],
-        key=lambda tx: datetime.strptime(tx['time'], "%Y-%m-%d %H:%M:%S"),  # or your exact format
+        key=lambda tx: datetime.strptime(tx['time'], "%Y-%m-%d %H:%M:%S"),
         reverse=True
     )[:10]
+
+    latest_transactions = sorted(
+        [tx for tx in txs],
+        key=lambda tx: datetime.strptime(tx['time'], "%Y-%m-%d %H:%M:%S"),
+        reverse=True
+    )[:20]
+
+    suspicious_transactions = sorted(
+        [tx for tx in latest_transactions if tx['fraud'] == 0 and tx['fraud_score'] >= SUSPICIOUS_THRESHOLD],
+        key=lambda tx: tx['fraud_score'],
+        reverse=True
+    )
 
     return jsonify({
         'total_tx': total_tx,
         'frauds': frauds,
         'fraud_rate': fraud_rate,
-        'latest_transactions': latest_transactions
+        'latest_fraudulent_transactions': latest_fraudulent_transactions,
+        'latest_transactions': latest_transactions,
+        'suspicious_transactions': suspicious_transactions
     })
 
 
